@@ -1,0 +1,106 @@
+  <!-- Code hasn't been used. -->
+<!-- 
+<!-- <?php include("../includes/connect.php"); ?>
+<?php
+if (isset($_SESSION['id'])) {
+	$partRes = $smeConn->query(`select * from users`);
+	$output = "";
+	while ($partRow = $partRes->fetch_assoc()) {
+
+		//$id=$row['id'];
+		$part = createPartFromDB($partRow['FirstName']);
+		$output .= $part->getBSRow() . ":::";
+	}
+	echo $output;
+}
+?> --> -->
+  
+  
+  $sql2 = "SELECT * from eventstaff, events,users where events.EventID=eventstaff.EventID AND eventstaff.PersonID=users.PersonID  
+    ORDER BY `eventstaff`.`PersonID` , eventstaff.EventID ASC" ;
+    $result2 = $smeConn->query($sql2);
+
+if ($result2->num_rows > 0) {
+    // output data of each row
+    $object = array();
+       $i = 0;
+       $count = 0;
+       $current_id = NULL;
+    while($row2 = $result2->fetch_assoc()) {
+        if ($i = 0) 
+        { 
+            $current_id = $row2['PersonID'];
+        } 
+          if ($current_id == $row2['PersonID'] and $count == 0) 
+        { 
+            array_push($object, $row2["FirstName"]." ".$row2['LastName']);
+            array_push($object, $row2['Phone']);
+            array_push($object, $row2['Usertype'][0]);
+            array_push($object, $row2["EventID"]);
+            $count ++;
+        } 
+        if ($current_id == $row2['PersonID'] and $count != 0) 
+        {
+            array_push($object, $row2["EventID"]);
+            $count ++;
+        } 
+        else
+        {    
+            if(isset($object[0])){
+                // foreach($object as $result) {
+                //     echo $result, '<br>';
+                // }
+                echo "<tr>";
+                $temp = 0;
+                for ($x = 0; $x < count($object); $x++) {
+                    if($x > 2){
+
+                        if($object[$x] - $temp == 1){
+                            echo "<td>1<button type='button' class='close' aria-label='Close'>
+                            <span aria-hidden='true'ß>&times;</span>
+                          </button></td>";
+                            $temp = $object[$x];
+
+                        }
+                        else{
+                            
+                            echo str_repeat( "<td><button type='button' class='close' aria-label='Close'>
+                            <span aria-hidden='true'ß>&times;</span>
+                          </button></td>",intval($object[$x] - $temp -1));
+                            echo "<td>1<button type='button' class='close' aria-label='Close'>
+                            <span aria-hidden='true'ß>&times;</span>
+                          </button></td>";
+                            $temp = $object[$x];
+
+                        }
+                        if($x == count($object) -1){
+                            if($totalnumberofEvents - $object[$x] != 0){
+                            echo str_repeat( "<td><button type='button' class='close' aria-label='Close'>
+                            <span aria-hidden='true'ß>&times;</span>
+                          </button></td>",intval($totalnumberofEvents -$object[$x]));
+                            }
+                        }
+                    }
+                    else{
+                    echo "<td>" . $object[$x] . "</td>";
+                }
+
+            }
+            }
+            $current_id = $row2['PersonID'];
+            $object = array();
+            array_push($object, $row2["FirstName"]." ".$row2['LastName']);
+            array_push($object, $row2['Phone']);
+            array_push($object, $row2['Usertype'][0]);
+            array_push($object, $row2["EventID"]);
+            $count =1;
+            
+        } 
+        $id = $row2['PersonID'];
+        #echo "<tr><td>" . $row2["FirstName"]." ".$row2['LastName']  ."</td> <td>".$row2['Phone'] ."</td> <td>".$row2['Usertype'][0] ."</td>";
+        $i++;
+    }
+    echo "</Table>";
+} else {
+    echo "0 results";
+}
